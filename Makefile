@@ -1,6 +1,5 @@
 DATE=$(shell date)
-CHECK=\033[32m✔\033[39m
-DONE="\n${CHECK} Done.\n"
+DONE="Done."
 
 deploy:
 	@echo "Deploy the blog to github pages."
