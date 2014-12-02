@@ -30,5 +30,8 @@ html-multi: $(SCRBL)
 		\
 		$(SCRBL)
 
-publish: html
+deploy:
+	cd html; make; cd ../..
+
+publish: html deploy
 	cd html; make; cd ../..
