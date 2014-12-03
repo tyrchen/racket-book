@@ -1,28 +1,30 @@
 #lang racket
 
-(require scribble/eval
+(require scribble/core
+		 scribble/racket
+		 scribble/eval
 		 racket/syntax
 		 racket/date
 		 scribble/manual
 		 db
-		 pict
-		 plot
+		 2htdp/image
+		 2htdp/universe
 		 plot/utils
 		 (for-label racket
-		 			pict
-		 			plot
+		 			2htdp/image
+		 			2htdp/universe
 		 			plot/utils
 		 			db))
 
 (provide (all-defined-out)
-		 (all-from-out plot)
 		 (all-from-out plot/utils)
 		 (all-from-out db)
-		 (all-from-out pict)
+		 (all-from-out 2htdp/image)
+		 (all-from-out 2htdp/universe)
 		 (for-label (all-from-out racket
-                                  pict
+                                  2htdp/image
+                                  2htdp/universe
                                   db
-                                  plot
                                   plot/utils)))
 
 ;; for the document meta data
@@ -40,6 +42,7 @@
 
 ;; shortcut for racketblock
 ;;
+
 (define-syntax-rule (rb body ...)
    (racketblock body ...))
 
@@ -53,11 +56,9 @@
 (define-syntax-rule (rh body ...)
    (hyperlink body ...))
 
-(require (only-in scribble/core style element)
-         (only-in scribble/manual para)
-         (only-in scribble/html-properties attributes alt-tag))
+(require (only-in scribble/html-properties attributes alt-tag))
 
-;; For use in Scribble source file. Lets you create a <pre><code class="#:lang"> 
+;; For use in Scribble source file. Lets you create a <pre> class="code"<code class="#:lang"> 
 ;; block with a language tag that can be syntax highlighted by highlight.js.
 ;;
 ;; Example usage:
@@ -68,3 +69,16 @@
 	(element (style "code" (list (alt-tag "pre")))
 		(element (style lang (list (alt-tag "code")))
 		xs)))
+
+(define reduces (make-element #f (list 'rarr)))
+
+;; For use in Scribble source file. Lets you highlight code on source code enclosed with @rb[].
+;;
+;; Example usage:
+;;
+;; @rb[(define #,(hl name) "Tyr Chen")]
+;;
+(define *hl (lambda (c)
+                  (make-element highlighted-color (list c))))
+(define-syntax hl
+   (syntax-rules () [(_ a) (*hl (racket a))]))

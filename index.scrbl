@@ -1,8 +1,7 @@
 #lang scribble/manual
 
-@(require (for-label pict racket)
+@(require (for-label racket)
           scribble/racket
-          pict
           "util/common.rkt")
 
 

@@ -86,7 +86,7 @@ print "Hello world!"
 
 你将会看到如下界面：
 
-@image["assets/images/drracket.png"]
+@image["assets/images/drracket.png" #:scale 0.8]
 
 正如你所看到的那样，@(drr) 允许你使用任意对象，包括图片。
 
@@ -127,12 +127,13 @@ Racket没有其它编程语言中的「关键字」（或者「保留字」的�
 
 函数的参数也可以是表达式。在上面的 @r[(+ 1 1)] 的例子中，@bold{+} 是一个函数，随后的两个 @bold{1} 是函数的参数。作为初学者，我们暂且先放下这些语法细节，写一些更多的代码耍耍吧。
 
-@rb[
+
+@#reader scribble/comment-reader(racketblock
 > (+ 2 4 6)
 12
 > (* 2 (+ 3 4))
 14
-> (expt 2 3) ; 指数函数
+> (expt 2 3) @; 指数函数
 8
 > (quotient 5 2) ; 求商
 2
@@ -142,15 +143,18 @@ Racket没有其它编程语言中的「关键字」（或者「保留字」的�
 5
 > (/ 4 6) ; 注意不能整除时，Racket用分数形式表示
 2/3
-> (exact->inexact 2/3) ; 转换成非精度实数，exact->inexact是一个函数，尽管看起来比较怪异
+> (exact->inexact 2/3) 
+; 转换成非精度实数，exact->inexact是一个函数，尽管看起来比较怪异
 0.6666666666
 > (* 1+2i 3+4i) ; 你还能手算虚数的乘除么？
 > -5+10i
 > (not #t) ; true/false用#t, #f表示，not是一个函数，表示「非」
 #f
-> (and -1 #f) ; 与函数，只要有参数不为#t，就返回#f。在and运算时，任何非#f的数据均相当于#t。
+> (and -1 #f)
+; 与函数，只要有参数不为#t，就返回#f。在and运算时，任何非#f的数据均相当于#t。
 #f
-> (and -1 2) ; 由于任何非#f的数据均相当于#t，所以and的结果在为#t时，会返回一个比#t更有意义的结果。
+> (and -1 2)
+; 由于任何非#f的数据均相当于#t，所以and的结果在为#t时，会返回一个比#t更有意义的结果。
 2
 > (or -1 #f) ; 或函数
 -1
@@ -166,11 +170,13 @@ Racket没有其它编程语言中的「关键字」（或者「保留字」的�
 #t
 > (= 10 20)
 #f
-> (string-append "你好" "，" "世界！") ; 在Racket中，字符串由""括起来，string-append可以将多个字符串连接起来
+> (string-append "你好" "，" "世界！")
+; 在Racket中，字符串由""括起来，string-append可以将多个字符串连接起来
 "你好，世界！"
 > (format "~a，~a！" "你好" "世界") ; format可以格式化字符串
 "你好，世界！"
-> (printf "~a，~a！" "你好" "世界") ; printf用来输出字符串，注意format/printf的输出在DrRacket里的颜色的不同
+> (printf "~a，~a！" "你好" "世界")
+; printf用来输出字符串，注意format/printf的输出在DrRacket里的颜色的不同
 你好，世界！
 > (number->string 42) ; 数字转字符串
 "42"
@@ -188,17 +194,18 @@ false
 #f
 > (number? 1+2i)
 #t
-]
+)
 
 @margin-note{更多关于函数副作用的知识，请参考：@rh["http://zh.wikipedia.org/wiki/%E5%87%BD%E6%95%B0%E5%89%AF%E4%BD%9C%E7%94%A8" "Wikipedia：函数副作用"]}
 
 在Racket中，绝大多数函数是没有副作用的，像 @r[printf] 这样的函数，除了有一个返回值以外，还向外设（这里是显示器）输出了字符，所以是有副作用的。注意 @r[printf] 的返回值并非一个字符串，我们通过下面的例子可以看到：
 
-@rb[
+@#reader scribble/comment-reader(racketblock
 > (string-append (format "~a，" "你好") "世界！")
 "你好，世界！"
-> (string-append (printf "~a，" "你好") "世界！") ; 会给出错误提示，告诉你 string-append 期待 string?，却等来了 #<void>
-]
+> (string-append (printf "~a，" "你好") "世界！")
+; 会给出错误提示，告诉你 string-append 期待 string?，却等来了 #<void>
+)
 
 我们先把函数的副作用放在一边，在第四章里面谈函数式编程时会讲到。
 
@@ -224,28 +231,159 @@ false
 
 使用 @r[define] 这个函数，我们可以定义一个变量，同样，我们也可以定义函数：
 
-@rb[
+@#reader scribble/comment-reader(racketblock
 > (define 
     (circle-area r) ; 函数名 参数列表
     (* pi (sqr r))  ; 函数体
   )
 > (circle-area 10)
 314.1592653589793
+)
+
+我们之前讲到Racket中没有关键字，那么，@r[define define 10] 会有什么后果？
+
+@#reader scribble/comment-reader(racketblock
+> (define define 10)
+> define
+10
+> (define a 10) ; 这里就会抛出异常，和执行 (10 a 10)的错误一样
+> (10 a 10)
+)
+
+所以，当你对Racket掌握到一定程度后，你可以任意改造这门语言，让它成为你的私人禁脔。
+
+对了，现在你已经把 @(drr) 的REPL解释器折腾坏了，不过没关系，运行一下 @(drr) 工具栏上的 @bold{Run}，一切又恢复如初了。
+
+@section[#:tag "begin-play"]{与Racket共舞}
+
+Racket内置了很多库，在了解更多的语法细节前，让我们轻松一下，体验体验Racket和 @(drr) 带来的无穷乐趣。
+
+要想引入一个库中的可用函数，可以使用 @r[require]，比如接下来我们要体验的库：
+
+@margin-note{2htdp意为：How To Develop Program, 2nd Edition，是Racket语言为教学而设计的一套库，其同名电子书可以在 @rh["http://www.ccs.neu.edu/home/matthias/HtDP2e/" "这里"] 阅读。}
+
+@rb[
+(require 2htdp/image)
 ]
 
+引入 @r[image] 库后，我们接下来就要做一些有意思的事情了。
 
 
-@section[#:tag "begin-grammar"]{Racket语法基础}
+@rb[
+> (define flag (rectangle 100 61.8 "solid" "red"))
+> flag
+#,(rectangle 100 61.8 "solid" "red")
+> (define big-star (star 15 "solid" "yellow"))
+> big-star
+#,(star 15 "solid" "yellow")
+> (overlay big-star flag)
+#,(overlay (star 15 "solid" "yellow") (rectangle 100 61.8 "solid" "red"))
+]
 
-在Racket的世界里，一切皆为表达式。表达式可以返回一个值，或者一个列表（list）。而函数，则是构成表达式的基本要素。和Racket里面
+@r[rectangle] 和 @r[star] 用来生成图形，@r[overlay] 将一个图形盖到另一个上面。我们再看看这些例子：
 
-@code-hl[#:lang "racket"]{
-;; 行注释
-;;
-#| 块注释
-    #|
-       可以嵌套
-    |#
-|#
-}
+@rb[
+> (triangle 40 "solid" "tan")
+#,(triangle 40 "solid" "tan")
+> (rhombus 40 60 "outline" "magenta")
+#,(rhombus 40 60 "outline" "magenta")
+> (circle 20 "solid" "green")
+#,(circle 20 "solid" "green")
+> (regular-polygon 50 3 "outline" "red")
+#,(regular-polygon 50 3 "outline" "red")
+> (regular-polygon 40 4 "solid" "blue")
+#,(regular-polygon 40 4 "solid" "blue")
+> (regular-polygon 20 8 "solid" "red")
+#,(regular-polygon 20 8 "solid" "red")
+> (ellipse 50 30 "solid" "purple")
+#,(ellipse 50 30 "solid" "purple")
+> (overlay (ellipse 10 10 "solid" "red")
+           (ellipse 20 20 "solid" "black")
+           (ellipse 30 30 "solid" "red")
+           (ellipse 40 40 "solid" "black")
+           (ellipse 50 50 "solid" "red")
+           (ellipse 60 60 "solid" "black"))
+#,(overlay (ellipse 10 10 "solid" "red")
+           (ellipse 20 20 "solid" "black")
+           (ellipse 30 30 "solid" "red")
+           (ellipse 40 40 "solid" "black")
+           (ellipse 50 50 "solid" "red")
+           (ellipse 60 60 "solid" "black"))
+> (overlay/xy (rectangle 20 20 "solid" "red")
+              10 10
+              (rectangle 20 20 "solid" "black"))
+#,(overlay/xy (rectangle 20 20 "solid" "red")
+              10 10
+              (rectangle 20 20 "solid" "black"))
+]
 
+这里大部分函数都很好理解，就不详细解释，最后的 @r[overlay/xy] 也是一个函数，Racket约定使用 @bold{/} 符号的函数代表其属于同一族，即 @r[overlay/xy] 是 @r[overlay] 的变体。
+
+我们以一个动画来结束本小结的内容吧：
+
+@rb[
+> (radial-star 8 8 64 "solid" "darkslategray")
+#,(radial-star 8 8 64 "solid" "darkslategray")
+> (define (my-star x)
+   (radial-star x 8 64 "solid" "darkslategray"))
+> (my-star 20)
+#,(radial-star 20 8 64 "solid" "darkslategray")
+> (place-image (my-star 30) 75 75 (empty-scene 150 150))
+#,(place-image (radial-star 30 8 64 "solid" "darkslategray")
+               75 75 (empty-scene 150 150))
+> (require 2htdp/universe)
+> (animate (#,(hl (lambda (x)))
+           (place-image (my-star (+ x 2)) 75 75 (empty-scene 150 150))))
+]
+
+这里我们引入了 @r[lambda] 的概念，这是因为 @r[animate] 需要一个接受一个参数的函数作为其参数，所以我们需要给它一个函数。@r[lambda] 是用来声明一个匿名函数的，这里：
+
+@rb[
+> (animate (lambda (x)
+           (place-image (my-star (+ x 2)) 75 75 (empty-scene 150 150))))
+]
+
+等价于：
+
+@rb[
+> (define (my-image x)
+          (place-image (my-star (+ x 2)) 75 75 (empty-scene 150 150)))
+> (animate my-image)
+195
+]
+
+@r[animate] 会启动一个时钟，每秒产生 @r[28] 个tick，从 @r[0] 开始，每次tick加 @r[1]，然后把生成的值传给传入的函数。由于 @r[radial-star] 的角的个数至少是2，所以这里在定义 @r[my-image] 时，为传入的 @r[x] 加了 @r[2]。@r[animate] 会无限运行下去，直到你把打开的窗口关掉。此时，返回的结果就是走过的tick数。
+
+我们可以重新定义一下 @r[my-star]，使这个动画运行一段时间后重头循环运行：
+
+@rb[
+> (define (my-star x)
+          (radial-star (+ (remainder x 100) 2) 8 64 "solid" "darkslategray"))
+]
+
+你可以尝试重新运行动画，看看效果，然后自行理解其含义。:)
+
+Racket的还提供了另一种动画方案 @r[big-bang]，可以这么使用：
+
+@rb[
+> (define (my-star x) (radial-star x 8 64 "solid" "blue"))
+> (define (ten? x) (equal? x 10))
+> (big-bang 100 
+            [to-draw my-star]
+            [on-tick sub1]
+            [stop-when ten?]
+            [on-key (lambda (s ke) 100)])
+]
+
+它允许你设置一个初始条件（@r[100]），执行函数（@r[my-star])，tick发生时对初值的改变（@r[sub1])，以及何时停止动画（@r[ten?])。此外，当动画未停止之前，有键盘事件发生时（你敲了任意键），初始条件又恢复成 (@r[100])，见 @r[on-key] 里的 @r[lambda] 函数。
+
+如果读完本节，对图形处理你还意犹未尽，可以读以下文档：
+@itemlist[
+
+@item{@rh["http://docs.racket-lang.org/quick/" "Quick: An Introduction to Racket with Pictures"]}
+
+@item{@rh["http://www.ccs.neu.edu/home/matthias/HtDP2e/part_prologue.html" "Prologue of \"How to Design Programs 2nd\""]}
+
+@item{@rh["http://docs.racket-lang.org/teachpack/2htdpimage.html" "2htdp/image的文档（内有很多例子）"]}
+
+]
