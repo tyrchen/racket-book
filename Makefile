@@ -1,12 +1,15 @@
 SCRBL=index.scrbl
-CSS=assets/custom.css
+ASSETS=assets
+HL_CSS=$(ASSETS)/highlight/github.css
+CUST_CSS=$(ASSETS)/custom.css
+HL_JS=$(ASSETS)/highlight/highlight.pack.js
 ADD_HEAD=bin/add-to-head.rkt
 
 .PHONY: local clean html html-single html-multi publish
 
-local: html-single
+local: html
 
-html: html-single html-multi
+html: html-multi
 	racket $(ADD_HEAD)
 
 html-single: $(SCRBL)
@@ -14,7 +17,9 @@ html-single: $(SCRBL)
 		--html \
 		--dest html \
 		--dest-name all.html \
-		++style $(CSS) \
+		++style $(HL_CSS) \
+		++extra $(HL_JS) \
+		++style $(CUST_CSS) \
 		++main-xref-in \
 		--redirect-main http://docs.racket-lang.org/ \
 		\
@@ -24,7 +29,9 @@ html-multi: $(SCRBL)
 	raco scribble \
 		--htmls \
 		--dest-name html \
-		++style $(CSS) \
+		++style $(HL_CSS) \
+		++extra $(HL_JS) \
+		++style $(CUST_CSS) \
 		++main-xref-in \
 		--redirect-main http://docs.racket-lang.org/ \
 		\

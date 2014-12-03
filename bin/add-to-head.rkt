@@ -14,6 +14,8 @@
 ga('create', 'UA-57258984-1', 'auto');
 ga('send', 'pageview');
 </script>
+<script src="highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 EOF
 )
 
