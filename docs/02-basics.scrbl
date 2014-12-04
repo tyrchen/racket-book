@@ -179,15 +179,15 @@ Racket的 @r[if] 没有多个分支，但是可以通过嵌套来完成相同的
 @rb[
 > (define (for/recursive l f)
     (if (> (length l) 0) (let ([h (car l)]
-                			   [t (cdr l)])
-            				(f h)
-            				(for/recursive t f))
+                               [t (cdr l)])
+                            (f h)
+                            (for/recursive t f))
         (void)))
 > (for/recursive '(1 2 3) display)
 123
 ]
 
-然而，@r[for] 这样的循环结构毕竟要简单清晰一些，因此，Racket提供了多种多样的 @r[for] 循环语句。我们先看几个例子：
+然而，@r[for] 这样的循环结构毕竟要简单清晰一些，因此，Racket提供了多种多样的 @r[for] 循环语句。我们先看一个例子：
 
 @rb[
 > (for ([i '(1 2 3 4)])
@@ -230,7 +230,7 @@ Racket的 @r[if] 没有多个分支，但是可以通过嵌套来完成相同的
 @defform[(for*/sum (clause ...) body ...+)]
 @defform[(for*/product (clause ...) body ...+)]
 ]]{
-这里的 @r[_clause] 是 @r[_[id sequence-expr]]，可以有多个，当存在多个 @r[_clause] 时，不带 @bold{*} 的版本会同时处理每个 @r[_sequence-expr]，并且，只要任何一个 @r[_sequence-expr] 结束，循环便结束；而带 @bold{*} 的版本会嵌套处理每个 @r[_sequence-expr]，直至全部可能都被穷尽。@r[_for] 表达式的返回值根据 @bold{/} 后面的symbol确定，比如说 @r[for/list] 的返回值是一个列表。
+这里的 @r[_clause] 是 @r[[id sequence-expr]]，可以有多个，当存在多个 @r[_clause] 时，不带 @bold{*} 的版本会同时处理每个 @r[_sequence-expr]，并且，只要任何一个 @r[_sequence-expr] 结束，循环便结束；而带 @bold{*} 的版本会嵌套处理每个 @r[_sequence-expr]，直至全部可能都被穷尽。@r[_for] 表达式的返回值根据 @bold{/} 后面的symbol确定，比如说 @r[for/list] 的返回值是一个列表。
 }
 
 我们通过一些例子来具体看看这些循环表达式如何使用：
@@ -301,6 +301,14 @@ too much!
 更多有关 @r[for] 循环的细节，请参考 @rh["http://docs.racket-lang.org/guide/for.html" "Racket官方文档：iterations and comprehensions"]。
 
 @section[#:tag "basics-data"]{基本数据结构}
+
+了解了最基本的控制结构，我们来看看Racket提供了哪些数据结构。@rh["http://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs" "Wirth 说过"]：
+
+@verbatim[#:indent 4]{
+Program = Algorithm + Data Structure
+}
+
+我们
 
 @subsection[#:tag "basics-data-number"]{number}
 
