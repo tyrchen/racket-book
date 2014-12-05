@@ -22,7 +22,93 @@
 2
 ]
 
+@r[define] 是可以做全局绑定的，每次只能绑定一个变量。如果想一次绑定多个变量，可以使用 @r[let]：
 
+@#reader scribble/comment-reader(racketblock
+> (let ([a 3]
+        [b (list-ref '(1 2 3 4) 3)])
+    (sqr (+ a b)))
+49
+> #,(hl (or a b))  ;; 这里会抛出undefined异常
+)
+
+@r[let] 和 @r[define] 最大的不同是 @r[let] 是局部绑定，绑定的范围仅仅在其作用域之内，上面的例子中，@r[_a] 和 @r[_b] 出了 @r[let] 的作用域便不复存在了。
+
+如果在绑定的过程中，需要互相引用，可以使用 @r[let*]。我们可以看下面的例子：
+
+@re[
+(let* ([x 10]
+         [y (* x x)])
+    (list x y))
+]
+
+有时候，你希望一次绑定多个值，可以使用 @r[let-values]：
+
+@re[
+(let-values ([(x y) (quotient/remainder 10 3)])
+    (list y x))
+]
+
+它也有对应的 @r[let*-values] 形式。如下例：
+
+@re[
+(let*-values ([(pi r rr) (values 3.14159 10 (lambda (x) (* x x)))]
+              [(perimeter area) (values (* 2 pi r) (* pi (rr r)))])
+    (list area perimeter))
+]
+
+在这个例子里，我们看到 @r[let] 也能把一个变量和一个 @r[lambda] 函数进行绑定。我们看到，@r[_rr] 在使用的过程中，需要为其传入一个已经绑定好的变量，比如本例中的 @r[_r]。那么问题来了，如果函数的参数要延迟到 @r[let] 语句的 r[_body] 里才能获得，那该怎么办？Racket提供了 @r[letrec]：
+
+@re[
+(letrec ([is-even? (lambda (n)
+                       (or (zero? n)
+                           (is-odd? (sub1 n))))]
+         [is-odd? (lambda (n)
+                      (and (not (zero? n))
+                           (is-even? (sub1 n))))])
+    (is-odd? 11))
+]
+
+在介绍它的功能之前，我们先看看同样的例子如果用 @r[let] 会有什么后果：
+
+@re[
+(let ([is-even? (lambda (n)
+                       (or (zero? n)
+                           (is-odd? (sub1 n))))]
+           [is-odd? (lambda (n)
+                      (and (not (zero? n))
+                           (is-even? (sub1 n))))])
+    (is-odd? 11))
+]
+
+这里会提示 @r[_is-even?] 没有定义。@r[letrec] 引入了一个语法层面的概念 @r[locations]，这个概念我们 @secref{advanced-racket} 那一章再讲。现在，我们只要这么理解：@r[letrec] 会先初始化每个要绑定的变量，为其放上一个占位符，等到引用的时候才真正开始计算。
+
+当然，这种方法并不适用于任何场合：被引用的表达式不能是立即求值的表达式，而是延迟计算的，如上例中的 @r[lambda]。几种错误的 @r[letrec] 用法：
+
+@re[
+(letrec ([x (+ y 10)]
+         [y (+ z 10)]
+         [z 10])
+    x)
+
+(letrec ([x (y 10)]
+         [y (z 10)]
+         [z (lambda (a) (+ a 10))])
+    x)
+]
+
+正确的用法是：
+
+@re[
+(letrec ([x (lambda () (+ (y) 10))]
+         [y (lambda () (+ (z) 10))]
+         [z (lambda () 10)])
+    (x))
+]
+
+@margin-note{如果你不畏艰险，执意要攻克这些语句，那么可以访问 @rh["http://docs.racket-lang.org/reference/let.html" "这里"] 阅读Racket的官方文档。}
+
+要完全理解 @r[letrec] 并非易事。就目前我们的能力而言，基本的 @r[let] 和 @r[let*] 在绝大多数场景下都足够用了。Racket还提供了其它一些绑定相关的语句：@r[letrec-values]，@r[let-syntax]，@r[letrec-syntax]，@r[let-syntaxes]，@r[letrec-syntaxes]，@r[letrec-syntaxes+values]。如果你看得头晕目眩，不知所以，那么恭喜你，咱俩感觉一样一样的！我们暂且跳过它们，稍稍休息一下，换换脑子，然后进入下一个环节。
 
 @subsection[#:tag "basics-grammer-cond"]{条件语句}
 
@@ -308,13 +394,73 @@ too much!
 Program = Algorithm + Data Structure
 }
 
-我们
+掌握了一门语言支持的数据结构，你就已经掌握了这门语言的一半的精髓。
 
-@subsection[#:tag "basics-data-number"]{number}
+@subsection[#:tag "basics-data-number"]{数值}
+
+数值是Racket的最基本的类型。Racket支持的数值类型非常丰富：整数，浮点数（实数），虚数，有理数（分数）等等。我们看一些例子：
+
+@re[
+1234
+(+ 1000000000000000000000000000000000000000000000000000000000000 4321)
+1.41414141414141414141414141414141414141414141414141414141414
+1414141414141414141414141414.14141414141414141414141414141414
+(/ 2 3)
+(/ 2 3.0)
+1+2i
+
+(number? 1.4)
+(number? (/ 9 10))
+(number? 1+2i)
+(number? 1.4e27)
+
+(exact->inexact 1/3)
+(floor 1.9)
+(ceiling 1.01)
+(round 1.5)
+#b111
+#o777
+#xdeadbeef
+]
+
+最后的三个例子里展示了Racket可以通过 @bold{#b}，@bold{#o}，@bold{#x} 来定义二进制，八进制和十六进制的数字。
 
 @subsection[#:tag "basics-data-string"]{string}
 
+字符串是基本上所有语言的标配，Racket也不例外。我们看看这些例子：
+
+@re[
+(string? "Hello world")
+(string #\R #\a #\c #\k #\e #\t)
+(make-string 10 #\c)
+(string-length "Tyr Chen")
+(string-ref "Apple" 3)
+(substring "Less is more" 5 7)
+(string-append "Hello" " " "world!")
+(string->list "Eternal")
+(list->string '(#\R #\o #\m #\e))
+]
+
+Racket还提供了一个关于 @r[string] 的库 @r[racket/string]，可以 @r[(require racket/string)] 后使用：
+
+@re[
+(string-join '["this", "is", "my", "best", "part"])
+(string-join '("随身衣物" "充电器" "洗漱用品") "，"
+               #:before-first "打包清单："
+               #:before-last "和"
+               #:after-last "等等。")
+(string-split "  foo bar  baz \r\n\t")
+(string-split "股票，开盘价，收盘价，最高价，最低价" "，")
+(string-trim "  foo bar  baz \r\n\t")
+(string-replace "股票，开盘价，收盘价，最高价，最低价" "，" "\n")
+(string-replace "股票，开盘价，收盘价，最高价，最低价" "，" "\n" #:all? #f)
+]
+
+延伸阅读：更多和 @r[string] 相关的函数，可以参考 @rh["http://docs.racket-lang.org/reference/strings.html" "Racket官方文档：strings"]。
+
 @subsection[#:tag "basics-data-list"]{list}
+
+
 
 @subsection[#:tag "basics-data-hash"]{hash table}
 

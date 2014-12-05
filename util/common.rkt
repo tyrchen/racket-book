@@ -18,6 +18,7 @@
 
 (provide (all-defined-out)
 		 (all-from-out plot/utils)
+		 (all-from-out scribble/eval)
 		 (all-from-out db)
 		 (all-from-out 2htdp/image)
 		 (all-from-out 2htdp/universe)
@@ -45,6 +46,21 @@
 
 (define-syntax-rule (rb body ...)
    (racketblock body ...))
+
+;; shortcut for examples
+(define basic-eval (make-base-eval))
+(interaction-eval #:eval basic-eval
+	(require racket/base
+	         racket/math
+	         racket/string
+	         racket/list))
+;; Here we can actually define more eval for different situation, such as plot-eval...
+(define-syntax re
+  (syntax-rules ()
+    [(_ #:eval . rest)
+     (interaction #:eval . rest)]
+    [(_ . rest)
+     (interaction #:eval basic-eval . rest)]))
 
 ;; shortcut for racket
 ;;
