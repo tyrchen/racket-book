@@ -444,7 +444,7 @@ Program = Algorithm + Data Structure
 Racket还提供了一个关于 @r[string] 的库 @r[racket/string]，可以 @r[(require racket/string)] 后使用：
 
 @re[
-(string-join '["this", "is", "my", "best", "part"])
+(string-join '["this" "is" "my" "best" "part"])
 (string-join '("随身衣物" "充电器" "洗漱用品") "，"
                #:before-first "打包清单："
                #:before-last "和"
