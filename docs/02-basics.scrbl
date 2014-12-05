@@ -326,7 +326,7 @@ Racket的 @r[if] 没有多个分支，但是可以通过嵌套来完成相同的
              [name '("goodbye" "farewell" "so long")])
     (format "~a: ~a" i name))
 '("1: goodbye" "2: farewell" "3: so long")
-> (#,(hl (for*/list)) ([i '(1 2 3 4)]
+> (#,(hl for*/list) ([i '(1 2 3 4)]
              [name '("goodbye" "farewell" "so long")])
     (format "~a: ~a" i name))
 '("1: goodbye"
