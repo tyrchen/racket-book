@@ -460,7 +460,31 @@ Racket还提供了一个关于 @r[string] 的库 @r[racket/string]，可以 @r[(
 
 @subsection[#:tag "basics-data-list"]{list}
 
+@r[list] 是Lisp（LISt Processor）的精髓所在，其重要程度要比 @r[lambda] 更胜一筹。其实软件无非是一个处理输入输出的系统：一组输入经过这个系统的若干步骤，变成一组输出。「一组输入」是列表，「若干步骤」是列表，「一组输出」也是列表。所以程序打交道的对象大多是列表。
 
+Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdər/），他们是操作 @r[cons] 的原子操作。@r[cons] 也被称为pair，包含两个值，@r[car] 获取第一个值，@r[cdr] 获取第二个值。
+
+@re[
+(cons 'x 'y)
+'(10 . 20)
+(define pair (cons 10 20))
+(car pair)
+(cdr pair)
+]
+
+如果把第二个元素以后的内容看作一个列表，列表也可以被看作是 @r[cons]。我们做几个实验：
+
+@re[
+(define l1 '(1 2 3 4 5 6 7 8))
+(car l1)
+(cdr l1)
+(car (cdr l1))
+(cadr l1)
+(cdr (cdr l1))
+(cddr l1)
+(caddr l1)
+(cddddr l1)
+]
 
 @subsection[#:tag "basics-data-hash"]{hash table}
 
