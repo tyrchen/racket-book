@@ -74,7 +74,7 @@
 
 (require (only-in scribble/html-properties attributes alt-tag))
 
-;; For use in Scribble source file. Lets you create a <pre> class="code"<code class="#:lang"> 
+;; For use in Scribble source file. Lets you create a <pre> class="code"<code class="#:lang">
 ;; block with a language tag that can be syntax highlighted by highlight.js.
 ;;
 ;; Example usage:
@@ -98,3 +98,8 @@
                   (make-element highlighted-color (list c))))
 (define-syntax hl
    (syntax-rules () [(_ a) (*hl (racket a))]))
+
+;; link back to official documents
+(define rdoc (curry (lambda (libname name) (secref name #:doc libname))))
+(define rdoc-ref (rdoc '(lib "scribblings/reference/reference.scrbl")))
+(define rdoc-techpack (rdoc '(lib "teachpack/teachpack.scrbl")))

@@ -456,7 +456,7 @@ Racket还提供了一个关于 @r[string] 的库 @r[racket/string]，可以 @r[(
 (string-replace "股票，开盘价，收盘价，最高价，最低价" "，" "\n" #:all? #f)
 ]
 
-延伸阅读：更多和 @r[string] 相关的函数，可以参考 @rh["http://docs.racket-lang.org/reference/strings.html" "Racket官方文档：strings"]。
+延伸阅读：更多和 @r[string] 相关的函数，可以参考 @rdoc-ref{strings}。
 
 @subsection[#:tag "basics-data-list"]{list}
 
@@ -508,11 +508,17 @@ Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdə
 (rest l)
 (take l 4)
 (drop l 4)
+(split-at l 4)
+(takef l even?)
+(dropf l even?)
 (length l)
 (list-ref l 0)
 (list-tail l 4)
 (append l '(0 1 2))
 (reverse l)
+
+(flatten (list '(1) '(2) '(3)))
+(remove-duplicates '(1 2 3 2 4 5 1))
 
 (filter (lambda (x) (> x 100)) l)
 (partition (lambda (x) (< x (first l))) l)
@@ -610,7 +616,7 @@ sorted([(1, "a"), (3, "b"), (2, "c")], key=lambda x: x[0])
 (sort (list '(3 "关上冰箱") '(1 "打开冰箱") '(2 "把大象塞到冰箱里")) #:key car <)
 ]
 
-
+延伸阅读：更多和 @r[list] 相关的函数，可以参考 @rdoc-ref{pairs}。
 
 @subsection[#:tag "basics-data-hash"]{hash table}
 
