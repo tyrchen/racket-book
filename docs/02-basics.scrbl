@@ -116,7 +116,7 @@
 
 在Racket里，条件语句也是函数。我们看最基本的条件语句：
 
-@defproc[(if [test-expr (判断条件)] 
+@defproc[(if [test-expr (判断条件)]
              [true-expr (当条件为真时执行的表达式)]
              [false-expr (当条件为假时执行的表达式)])
          value]{
@@ -462,7 +462,7 @@ Racket还提供了一个关于 @r[string] 的库 @r[racket/string]，可以 @r[(
 
 @r[list] 是Lisp（LISt Processor）的精髓所在，其重要程度要比 @r[lambda] 更胜一筹。其实软件无非是一个处理输入输出的系统：一组输入经过这个系统的若干步骤，变成一组输出。「一组输入」是列表，「若干步骤」是列表，「一组输出」也是列表。所以程序打交道的对象大多是列表。
 
-Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdər/），他们是操作 @r[cons] 的原子操作。@r[cons] 也被称为pair，包含两个值，@r[car] 获取第一个值，@r[cdr] 获取第二个值。
+Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdər/），他们是操作 @r[cons] 的原子操作。@r[cons] 也被称为pair，包含两个值，@r[car] 获取第一个值，@r[cdr] 获取第二个值。Racket继承了Lisp的这一特性：
 
 @re[
 (cons 'x 'y)
@@ -475,6 +475,9 @@ Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdə
 如果把第二个元素以后的内容看作一个列表，列表也可以被看作是 @r[cons]。我们做几个实验：
 
 @re[
+(cons 1 (cons 2 3))
+(cons 1 (cons 2 (cons 3 '())))
+(list 1 2 3)
 (define l1 '(1 2 3 4 5 6 7 8))
 (car l1)
 (cdr l1)
@@ -485,6 +488,129 @@ Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdə
 (caddr l1)
 (cddddr l1)
 ]
+
+在Racket里，@r[_pair] 不是 @r[_list]，但 @r[_list] 是 @r[_pair]：
+
+@re[
+(pair? '(1 . 2))
+(list? '(1 . 2))
+(pair? '(1 2))
+(list? '(1 2))
+]
+
+那么，@r[(cons 1 (cons 2 3))] 代表什么呢？为什么结果这么奇特，不是一个正常的列表？我们暂且放下这么疑问，留待以后再回答这个问题。
+
+我们看看主要的列表操作的函数：
+
+@re[
+(define l (list 234 123 68 74 100 1 3 5 8 4 2))
+(first l)
+(rest l)
+(take l 4)
+(drop l 4)
+(length l)
+(list-ref l 0)
+(list-tail l 4)
+(append l '(0 1 2))
+(reverse l)
+
+(filter (lambda (x) (> x 100)) l)
+(partition (lambda (x) (< x (first l))) l)
+]
+
+@r[partition] 是个有趣的函数，它把列表按照你给定的条件分成两个列表：满足条件的；不满足条件的。嗯，让我们来利用这一函数，写个自己的 @r[_quicksort] 函数：
+
+@re[
+(define l (list 234 123 68 74 100 1 3 5 8 4 2))
+(define (qsort1 l)
+  (if (or (empty? l) (empty? (cdr l))) l
+      (let*-values ([(key) (car l)]
+                     [(small big)
+                      (partition (lambda (x) (< x key))
+                                 (cdr l))])
+        (append (qsort1 small)
+                (list key)
+                (qsort1 big)))))
+
+(qsort1 l)
+]
+
+对于给定的列表，我们拿出第一个元素µ，把剩下里的元素分成两份：小于µ的元素列表和大于µ的元素列表。然后对整个过程进行递归，直到所有元素排完。我们虽然实现了 @r[_quicksort] 的基本功能，但目前只能实现数字的排序，如果是其它数据结构呢？这个实现太不灵活。让我们稍稍修改一下，把比较的逻辑抽取出来：
+
+@rb[
+(define (qsort2 l #,(hl cmp))
+  (if (or (empty? l) (empty? (cdr l))) l
+      (let*-values ([(key) (car l)]
+                     [(small big)
+                      (partition (lambda (x)(#,(hl cmp) x key))
+                                 (cdr l))])
+        (append (qsort2 small #,(hl cmp))
+                (list key)
+                (qsort2 big #,(hl cmp))))))
+
+> (qsort2 l <)
+'(1 2 3 4 5 8 68 74 100 123 234)
+> (qsort2 l >)
+'(234 1 2 3 4 5 8 68 74 100 123)
+> (qsort2 (list "hello" "world" "baby") string<?)
+'("baby" "hello" "world")
+]
+
+如果你用过Python，一定知道其 @r[_sorted] 函数可以这样使用：
+
+@code-hl[#:lang "python"]{
+sorted([(1, "a"), (3, "b"), (2, "c")], key=lambda x: x[0])
+[(1, 'a'), (2, 'c'), (3, 'b')]
+}
+
+我们自然想让自己的 @r[_qsort] 有这样的功能了。这也不难，我们需要把 @r[_key] 的获取抽象出来：
+
+@rb[
+(define (qsort3 l cmp #,(hl key))
+  (if (or (empty? l) (empty? (cdr l))) l
+      (let*-values ([(item) (car l)]
+                    [(small big)
+                     (partition (lambda (x) (cmp (#,(hl key) x) (#,(hl key) item)))
+                                (cdr l))])
+        (append (qsort3 small cmp #,(hl key))
+                (list item)
+                (qsort3 big cmp #,(hl key))))))
+
+> (qsort3 (list '(3 "关上冰箱") '(1 "打开冰箱") '(2 "把大象塞到冰箱里")) < car)
+'((1 "打开冰箱") (2 "把大象塞到冰箱里") (3 "关上冰箱"))
+> (qsort3 l < (lambda (x) x))
+'(1 2 3 4 5 8 68 74 100 123 234)
+]
+
+现在，功能是丰满了，但函数使用起来越来越麻烦，最初的 @r[(qsort1 l)] 变成了如今的 @r[(qsort3 l < (lambda (x) x))]，好不啰嗦。还好，Racket提供了函数的可选参数，我们再来修订一下：
+
+@rb[
+(define (qsort l [cmp <] [key (lambda (x) x)])
+  (if (or (empty? l) (empty? (cdr l))) l
+      (let*-values ([(item) (car l)]
+                    [(small big)
+                     (partition (lambda (x) (cmp (key x) (key item)))
+                                (cdr l))])
+        (append (qsort small cmp key)
+                (list item)
+                (qsort big cmp key)))))
+
+> (qsort l)
+'(1 2 3 4 5 8 68 74 100 123 234)
+> (qsort l >)
+'(234 123 100 74 68 8 5 4 3 2 1)
+]
+
+费了这么多口舌，其实Racket自己就提供了一个全功能的 @r[sort]：
+
+@re[
+(define l (list 234 123 68 74 100 1 3 5 8 4 2))
+(sort l <)
+(sort (list "hello" "world" "babay") string<?)
+(sort (list '(3 "关上冰箱") '(1 "打开冰箱") '(2 "把大象塞到冰箱里")) #:key car <)
+]
+
+
 
 @subsection[#:tag "basics-data-hash"]{hash table}
 
