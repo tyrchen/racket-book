@@ -53,6 +53,7 @@
 	(require racket/base
 	         racket/math
 	         racket/string
+	         racket/vector
 	         racket/list))
 ;; Here we can actually define more eval for different situation, such as plot-eval...
 (define-syntax re
@@ -102,4 +103,5 @@
 ;; link back to official documents
 (define rdoc (curry (lambda (libname name) (secref name #:doc libname))))
 (define rdoc-ref (rdoc '(lib "scribblings/reference/reference.scrbl")))
-(define rdoc-techpack (rdoc '(lib "teachpack/teachpack.scrbl")))
+(define rdoc-teachpack (rdoc '(lib "teachpack/teachpack.scrbl")))
+(define rdoc-guide (rdoc '(lib "scribblings/guide/guide.scrbl")))

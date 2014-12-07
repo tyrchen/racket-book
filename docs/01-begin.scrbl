@@ -399,6 +399,6 @@ Racket的还提供了另一种动画方案 @r[big-bang]，可以这么使用：
 
 @item{@rh["http://www.ccs.neu.edu/home/matthias/HtDP2e/part_prologue.html" "Prologue of \"How to Design Programs 2nd\""]}
 
-@item{@rdoc-techpack{image}（内有很多例子）}
+@item{@rdoc-teachpack{image}（内有很多例子）}
 
 ]

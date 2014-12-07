@@ -618,9 +618,37 @@ sorted([(1, "a"), (3, "b"), (2, "c")], key=lambda x: x[0])
 
 延伸阅读：更多和 @r[list] 相关的函数，可以参考 @rdoc-ref{pairs}。
 
+@subsection[#:tag "basics-data-vector"]{vector}
+
+@r[vector] 是固定长度的数组，@r[vector] 和 @r[list] 的优缺点可以想象一下C语言中的数组和带尾指针（及长度）的双向链表。我们通过代码先感受一下 @r[vector]：
+
+@re[
+(define v1 (vector 1 2 3))
+v1
+(equal? v1 #(1 2 3))
+(vector? v1)
+(vector->list v1)
+(list->vector '(3 2 1))
+(vector-ref v1 0)
+(for ([i #(1 2 3)]) (display i))
+(vector-take v1 1)
+(vector-drop v1 1)
+(vector-split-at v1 1)
+(vector-length v1)
+(vector-append v1 #(0 1 2))
+]
+
+可以看到，@r[vector] 的使用几乎和 @r[list] 一致，甚至函数的命名都很相似。
+
+延伸阅读：更多和 @r[vector] 相关的函数，可以参考 @rdoc-ref{vectors}。
+
 @subsection[#:tag "basics-data-hash"]{hash table}
 
-@subsection[#:tag "basics-data-vector"]{vector}
+哈希表（@r[hash]）是目前几乎每种语言都会内置的数据结构。在Python里，它叫 @bold{dict}；在golang中，它叫 @bold{map}。哈希表是由一系列键值对（Key-value pair）组成的数据结构，具备和数组相同的 @bold{O(1)}存取能力。我们看看Racket中的哈希表如何定义的：
+
+@re[
+(define ht (make-hash))
+]
 
 @subsection[#:tag "basics-data-datum"]{datum}
 
