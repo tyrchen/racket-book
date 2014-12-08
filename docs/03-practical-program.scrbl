@@ -30,7 +30,7 @@
 
 @margin-note{这里假设你依旧使用 @(drr)}
 
-我们先来实验一下算法。使用你喜欢的编辑器创建一个新的文件，并将其存放在 @bold{~/study/racket/face.rkt} 下。接下来你需要准备一幅图片，我们随便下载一张 @rh["https://c1.staticflickr.com/9/8064/8257151659_fa29614b17_z.jpg" "无版权的照片"]，存为 @bold{woman.jpg}，放在和你当前工作目录相同的地方，然后在编辑器中输入：
+我们先来实验一下算法。使用你喜欢的编辑器创建一个新的文件，并将其存放在 @bold{~/study/racket/face.rkt} 下。接下来你需要准备一幅图片，我们随便下载一张 @rh["https://c1.staticflickr.com/9/8064/8257151659_fa29614b17_z.jpg" "无版权的照片"]，存为 @bold{face.jpg}，放在和你当前工作目录相同的地方，然后在编辑器中输入：
 
 
 @re[
