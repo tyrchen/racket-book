@@ -34,10 +34,10 @@
 
 @; -------------------------------------------------
 @; include-section["docs/preface.scrbl"]
-@include-section["docs/01-begin.scrbl"]
-@include-section["docs/02-basics.scrbl"]
-@include-section["docs/03-practical-program.scrbl"]
-@include-section["docs/04-advanced-racket.scrbl"]
+@include-section["docs/01-begin/index.scrbl"]
+@include-section["docs/02-basics/index.scrbl"]
+@include-section["docs/03-practical-programs/index.scrbl"]
+@include-section["docs/04-advanced-racket/index.scrbl"]
 @include-section["docs/05-plotting.scrbl"]
 @include-section["docs/06-scribble.scrbl"]
 @include-section["docs/07-package-system.scrbl"]
