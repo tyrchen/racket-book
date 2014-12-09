@@ -22,7 +22,7 @@
 
 @image["assets/images/sublime.jpg" #:style "cover"]
 
-@section[#:tag "practical-racket-crop"]{图片处理}
+@section[#:tag "practical-racket-crop"]{照片裁剪}
 
 @margin-note{当然，osx本身就提供了 @r[_sips] 这个程序让你可以很方便地写个bash脚本（或者Python脚本）就能完成这个任务。}
 
@@ -131,11 +131,11 @@ $ racket face.rkt face.jpg 400
 #t
 }
 
-我们发现，这个目录下生成了一个新的图片 @bold{face-400.jpg}。
+我们发现，这个目录下生成了一个新的图片 @bold{face-400.jpg}。一切如我们所期望的那样。
 
 目前这段代码有个问题，如果 @r[_width] 大于图片的长或者宽呢？显然会出错。这就留给读者自行修改吧。
 
-细心的读者会发现，生成的图片大小怎么这么大？
+细心的读者会发现，生成的图片大小怎么这么大？让我们看看为什么：
 
 @code-hl[#:lang "bash"]{
 $ file face-400.jpg

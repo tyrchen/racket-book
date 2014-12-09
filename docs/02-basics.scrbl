@@ -477,6 +477,7 @@ Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdə
 @re[
 (cons 1 (cons 2 3))
 (cons 1 (cons 2 (cons 3 '())))
+(cons 1 (cons 2 empty))
 (list 1 2 3)
 (define l1 '(1 2 3 4 5 6 7 8))
 (car l1)
@@ -653,6 +654,14 @@ v1
 @subsection[#:tag "basics-data-datum"]{datum}
 
 @subsection[#:tag "basics-data-symbol"]{symbol}
+
+在 @secref{basics-data-list} 的例子中，你也许会注意到列表的简写形式：相对于 @r[(list 1 2 3)]，@r['(1 2 3)] 能更简单地表现一个列表。那么，如果要用它定义嵌套的列表呢？该怎么定义？是 @r['('(1 2) '(3 4))] 么？让Racket直接告诉我们：
+
+@re[
+(list (list 1 2) list (3 4))
+]
+
+咦！仅需要一个简单的 @bold{'}，我们就可以定义嵌套的列表。那么，@bold{'} 究竟是个什么东西？为什么它能够支持列表的嵌套？而不是我们想象的那样去定义？
 
 @subsection[#:tag "basics-data-syntax"]{syntax}
 
