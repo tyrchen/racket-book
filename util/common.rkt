@@ -41,6 +41,8 @@
 
 (define (drr) (racket DrRacket))
 
+(define (bq) (racketvalfont "'"))
+
 ;; shortcut for racketblock
 ;;
 

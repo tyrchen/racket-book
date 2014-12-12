@@ -90,6 +90,8 @@ Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdə
 (cdr pair)
 ]
 
+@margin-note{@r[cadar l] 是 @r[(car (cdr (car (l))))]} 的简写
+
 如果把第二个元素以后的内容看作一个列表，列表也可以被看作是 @r[cons]。我们做几个实验：
 
 @re[
@@ -279,6 +281,67 @@ v1
 (list (list 1 2) (list 3 4))
 ]
 
-咦！仅需要一个简单的 @bold{'}，我们就可以定义嵌套的列表。那么，@bold{'} 究竟是个什么东西？为什么它能够支持列表的嵌套？而不是我们想象的那样去定义？
+咦！仅需要一个简单的 @(bq)，我们就可以定义嵌套的列表。那么，@(bq)究竟是个什么东西？为什么它能够支持列表的嵌套？而不是我们想象的那样去定义？让我们多尝试一些代码，探寻 @(bq) 的秘密：
+
+@re[
+(define l1 ''(1 2 3 4))
+(car l1)
+(cdr l1)
+(cadr l1)
+(caadr l1)
+(cdadr l1)
+(define l2 '('(1 2) '(3 4)))
+(car l2)
+(cdr l2)
+''1
+(car ''1)
+(cdr ''1)
+(cadr ''1)
+(cddr ''1)
+]
+
+是不是有中很凌乱的感觉？按照racket的定义，@(bq) 是 @r[quote] 的简写，所以 @r['(1 2 3)] 等价于 @bold{(quote (1 2 3))}，而其会被racket进一步翻译成 @r[(list '1 '2 '3)]。在racket里，对数字和字符串 @r[quote] 等于其本身：
+
+@re[
+'1
+'"hello world"
+'#t
+'#f
+'a
+]
+
+所以 @r[(list '1 '2 '3)] 等于 @r[(list 1 2 3)]。按这个推演，我们看上面的例子：
+
+@rb[
+> ''(1 2 3 4) -> '(quote (1 2 3 4))
+              -> (list 'quote '(1 2 3 4))
+              -> (list 'quote (list 1 2 3 4))
+]
+
+试试看：
+
+@re[
+(list 'quote (list 1 2 3 4))
+]
+
+Bingo！我们再看上面那个复杂一些的例子：
+
+@rb[
+> '('(1 2) '(3 4)) -> '((quote (1 2)) (quote (3 4)))
+                   -> (list '(quote (1 2)) '(quote (3 4)))
+                   -> (list (list 'quote '(1 2)) (list 'quote '(3 4)))
+                   -> (list (list 'quote (list 1 2)) (list 'quote (list 3 4)))
+]
+
+试试看：
+
+@re[
+(list (list 'quote (list 1 2)) (list 'quote (list 3 4)))
+]
+
+希望你看到这里还没晕。现在你应该理解为什么嵌套的 @r[list] 用一个 @r[quote] 就能搞定，以及之前例子中 @r[car] / @r[cdr] 会出来各种凌乱的结果的原因了吧。
+
+好了，热身活动结束，我们谈谈这一节要讲的内容 —— @r[symbol]。
 
 @section[#:tag "basics-data-syntax"]{syntax}
+
