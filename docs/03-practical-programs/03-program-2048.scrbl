@@ -283,5 +283,61 @@ OK，现在这个游戏的基本算法就有了，geek们已经开始可以通�
 (show-board (init-board 6))
 ]
 
-@section[#:tag "practical-2048-animation"]{让游戏动起来}
+@section[#:tag "practical-2048-animation"]{让游戏运行起来}
 
+在 @r[2htdp/universe] 中，提供了 @r[big-bang] 函数。我们在之前的章节中见过这个函数。@r[big-bang] 接受键盘和鼠标事件，还会定期发出 @r[on-tick] 事件。@r[big-bang] 中所有函数都会接受一个调用者指定的参数，这个参数在 @r[big-bang] 的第一个参数中提供初值，并且根据各种事件产生后处理函数的返回值变化。你可以认为这是一个有关游戏状态的参数。在2048游戏中，棋盘就是一个游戏状态，其它的如用户得分，总共走下的步数等等，都属于游戏状态。为简单起见，我们就认为这个游戏的状态就是我们之前反复操作的棋盘。
+
+@margin-note{如果用户敲了其它键，我们返回一个对棋盘状态什么也不做的函数}
+首先我们先把键盘操作映射成为我们之前制作好的函数：
+
+@re[
+(require 2htdp/universe)
+(define (key->ops a-key)
+  (cond
+    [(key=? a-key "left")  move-left]
+    [(key=? a-key "right") move-right]
+    [(key=? a-key "up")    move-up]
+    [(key=? a-key "down")  move-down]
+    [else (λ (x) x)]))
+]
+
+接下来我们定义整个游戏：
+
+@re[
+(define (show-board-over b)
+  (let* ([board (show-board b)]
+         [layer (square (image-width board) 'solid (color 0 0 0 90))])
+    (overlay (text "Game over!" 40 TILE-FG)
+             layer board)))
+
+(show-board-over (init-board 5))
+
+(define (change b key)
+  ((key->ops key) b))
+
+(define (start n)
+  (big-bang (init-board n)
+            (to-draw show-board)
+            (on-key change)
+            (stop-when finished? show-board-over)
+            (name "2048 - racket")))
+]
+
+@r[_(init-board n)] 初始化一个棋盘，这个棋盘状态会传入 @r[_show_board]，@r[_change]，@r[_finished?] 和 @r[_show-board-over] 中。同样，这些函数都会返回一个新的棋盘状态，供 @r[big-bang] 下次事件发生的时候使用。
+
+当键盘事件发生时，@r[_change] 会被调用，此时，棋盘会按照用户的按键进行变化；变化完成后，结果会通过 @r[_show-board] 展示出来；同时，每次状态改变发生后，@r[big-bang] 都会检查是否 @r[_finished?]，如果为 @r[#t]，则调用 @r[_show-board-over]。
+
+现在，你可以调用 @r[(start 4)] 开始游戏了。是不是非常简单？
+
+@section[#:tag "practical-2048-more"]{课后作业}
+
+这个游戏和原版游戏相比，山寨度也就达到了70%。目前还有以下遗憾：
+
+@itemlist[
+@item{没有记录和显示用户的得分，以及走过的步数}
+@item{没有动画效果，游戏的体验比较生硬}
+@item{没有计时，无法提供更多的玩法}
+@item{没有音效，略嫌枯燥}
+]
+
+这些遗憾就交由感兴趣的读者完成。
