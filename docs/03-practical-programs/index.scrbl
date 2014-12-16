@@ -13,3 +13,4 @@
 @; -------------------------------------------------
 @include-section["01-editors.scrbl"]
 @include-section["02-program-crop.scrbl"]
+@include-section["03-program-2048.scrbl"]

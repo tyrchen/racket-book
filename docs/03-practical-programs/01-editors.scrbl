@@ -4,7 +4,7 @@
           scribble/manual
           "../../util/common.rkt")
 
-@title[#:tag "practical-racket-editor"]{找个称手的编辑器}
+@title[#:tag "practical-editor"]{找个称手的编辑器}
 
 @(drr) 本身就是一个很棒的编辑器，可以用 @bold{ctrl+/} 自动补齐。在其右上角还有函数原型的提示，当你光标移动到某个函数上时，就会显示，非常方便。
 

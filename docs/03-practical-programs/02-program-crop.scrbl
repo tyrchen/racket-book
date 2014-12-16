@@ -4,7 +4,7 @@
           scribble/manual
           "../../util/common.rkt")
 
-@title[#:tag "practical-racket-crop"]{照片裁剪}
+@title[#:tag "practical-crop"]{照片裁剪}
 
 @margin-note{当然，osx本身就提供了 @r[_sips] 这个程序让你可以很方便地写个bash脚本（或者Python脚本）就能完成这个任务。}
 
