@@ -36,9 +36,9 @@ Program = Algorithm + Data Structure
 (floor 1.9)
 (ceiling 1.01)
 (round 1.5)
-#b111
-#o777
-#xdeadbeef
+(eval:alts @#,racketvalfont{#b111} #b111)
+(eval:alts @#,racketvalfont{#o777} #o777)
+(eval:alts @#,racketvalfont{#xdeadbeef} #xdeadbeef)
 ]
 
 最后的三个例子里展示了Racket可以通过 @bold{#b}，@bold{#o}，@bold{#x} 来定义二进制，八进制和十六进制的数字。
