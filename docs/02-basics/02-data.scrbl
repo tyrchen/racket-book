@@ -265,13 +265,54 @@ v1
 
 @section[#:tag "basics-data-hash"]{哈希表}
 
-哈希表（@r[hash]）是目前几乎每种语言都会内置的数据结构。在Python里，它叫 @bold{dict}；在golang中，它叫 @bold{map}。哈希表是由一系列键值对（Key-value pair）组成的数据结构，具备和数组相同的 @bold{O(1)}存取能力。我们看看Racket中的哈希表如何定义的：
+哈希表（@r[hash]）是目前几乎每种语言都会内置的数据结构。在Python里，它叫 @bold{dict}；在golang中，它叫 @bold{map}。哈希表是由一系列键值对（Key-value pair）组成的数据结构，具备和数组相同的 @bold{O(1)}存取能力（最佳情况）。标准的哈希表的实现方式如下：
+
+@image["assets/images/hash_table.png"]
+
+@margin-note{更多有关哈希表的算法和存储方式，请参考：@rh["http://en.wikipedia.org/wiki/Hash_table" "Hash table"]}
+
+当冲突产生时，一般会使用链表来保存冲突链。好的哈希算法会让系统中最长的冲突链尽可能地短。
+
+我们看看Racket中的哈希表如何定义和访问：
+
+@re[
+(define ht (hash "key1" "value1" 'key2 1234 3 (list 1 2) (list 'key4) 'value4))
+(hash-ref ht "key1")
+(hash-ref ht 'key2)
+(hash-ref ht 3)
+(hash-ref ht (list 'key4))
+(hash-ref ht 'key5)
+]
+
+哈希表的 @r[_key] 和 @r[_value] 可以是任意类型，访问不存在的 @r[_key] 会抛出异常。通过上面的例子，我们可以看到，哈希表的简写符号是 @bold{#hash}，@r[_key] 和 @r[_value] 间使用 @bold{.} 来连接。
+
+由于哈希表的 @r[_key] 可以是任意类型，这就带来一个问题：@r[_key] 究竟怎么比较？是使用 @r[equal?]（相同的值） 还是 @r[eq?]（相同的对象），还是 @r[eqv?]（字符和数字相同或对象相同）？我们先看看这三种比较方式的区别：
+
+@re[
+(eq? (+ 1 1) (+ 1 1))
+(eqv? (+ 1 1) (+ 1 1))
+(equal? (+ 1 1) (+ 1 1))
+(eq? (sqrt 1001) (sqrt 1001))
+(eqv? (sqrt 1001) (sqrt 1001))
+(equal? (sqrt 1001) (sqrt 1001))
+(eq? (list 1 2) (list 1 2))
+(eqv? (list 1 2) (list 1 2))
+(equal? (list 1 2) (list 1 2))
+(eq? (make-string 3 #\z) (make-string 3 #\z))
+(eqv? (make-string 3 #\z) (make-string 3 #\z))
+(equal? (make-string 3 #\z) (make-string 3 #\z))
+]
+
+对应的，哈希表也可以使用 @r[hash]，@r[hasheq]，@r[hasheqv] 来创建，相应的简写符号也不同。不过，通过这三种方式创建的哈希表是不可修改的，可很多使用哈希表的场景都需要修改哈希表，怎么办？Racket提供了 @r[make-hash], @r[make-hasheqv], 以及 @r[make-hasheq]。我们看例子：
 
 @re[
 (define ht (make-hash))
+(hash-set! ht "key1" 'v1)
+(hash-set! ht (list 1 2) #hash(("k" . "v")))
+(hash-ref (hash-ref ht (list 1 2)) "k")
 ]
 
-@section[#:tag "basics-data-datum"]{datum}
+延伸阅读：更多和 @r[hash] 相关的函数，可以参考 @rdoc-ref{hashtables}。
 
 @section[#:tag "basics-data-symbol"]{symbol}
 
@@ -343,5 +384,33 @@ Bingo！我们再看上面那个复杂一些的例子：
 
 好了，热身活动结束，我们谈谈这一节要讲的内容 —— @r[symbol]。
 
-@section[#:tag "basics-data-syntax"]{syntax}
+在Racket中，使用 @bold{'} quote 起来的符号，就是 symbol。symbol 有点类似于erlang中的atom，是一个不可变的原子值，其值和表现形式一样。symbol 和 variable 不同的地方在于，variable本身是只个符号，其值和符号本身没有任何关系。
 
+@re[
+(eq? 'a (quote a))
+]
+
+从之前的例子中，我们可以看到，一个 @r[quote] 会反复作用于内部的表达式，因此一旦一个表达式被 @r[quote] 起来，它就不会进行运算：
+
+@re[
+'(1 (+ 1 1) 3)
+(quote (1 (+ 1 1) 3))
+(define x 2)
+'(1 x 3)
+]
+
+然而，有些场合下，我们需要内部的表达式计算后再被 @r[quote]，成为一个 symbol，怎么办？Racket提供了 @r[quasiquote]，标记是 @bold{`}（tab键上边的那个符号）。大部分情况下，@r[quasiquote] 和 @r[quote] 表现形式是一样的，只有在表达式里出现 @r[unquote]（标记是 @bold{,}）时，@r[quasiquote] 会计算 @r[unquote] 的表达式的值：
+
+@re[
+'(1 2 3)
+`(1 2 3)
+'(1 (unquote (+ 1 1)) 3)
+`(1 (unquote (+ 1 1)) 3)
+`(1 ,(+ 1 1) 3)
+'(1 x 3)
+`(1 ,x 3)
+]
+
+对于Racket来说，代码和数据是没有分别的，这也是Lisp的一大特色。symbol 是代码和数据之间转化的桥梁，在和 @r[syntax] 相关的场合会被大量用到，其中 @r[quasiquote] 和 @r[unquote] 也有很多用武之地。在这一节里，我们可能还无法理解它的作用，但不要紧，之后的章节我们会继续看到它的身影。
+
+延伸阅读：更多和 @r[symbol] 相关的函数，可以参考 @rdoc-ref{symbols}。

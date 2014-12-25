@@ -7,7 +7,9 @@
 
 @title[#:tag "advanced-racket-fp"]{函数式编程}
 
-@section[#:tag "advanced-racket-fp-func"]{和高阶函数（High-ordered Function）}
+
+
+@section[#:tag "advanced-racket-fp-func"]{高阶函数（High-ordered Function）}
 
 @section[#:tag "advanced-racket-fp-pure-func"]{纯函数（Pure Function）}
 
