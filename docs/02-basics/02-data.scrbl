@@ -90,7 +90,7 @@ Lisp里最基本的操作是 @r[car]（读/ˈkɑr/） 和 @r[cdr]（读/ˈkʌdə
 (cdr pair)
 ]
 
-@margin-note{@r[cadar l] 是 @r[(car (cdr (car (l))))]} 的简写
+@margin-note{@r[cadar l] 是 @r[(car (cdr (car (l))))] 的简写}
 
 如果把第二个元素以后的内容看作一个列表，列表也可以被看作是 @r[cons]。我们做几个实验：
 
