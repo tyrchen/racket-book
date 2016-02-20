@@ -111,12 +111,12 @@
 
 @re[
 (define (move-row row v left?)
-  (let* ([n (length row)]
-         [l (merge (filter (λ (x) (not (zero? x))) row))]
-         [padding (make-list (- n (length l)) v)])
-    (if left?
-        (append l padding)
-        (append padding l))))
+   (if left?
+       (let* ([n (length row)]
+              [l (merge (filter (λ (x) (not (zero? x))) row))]
+              [padding (make-list (- n (length l)) v)])
+         (append l padding))
+       (reverse (move-row (reverse row) v (not left?)))))
 (define (move lst v left?)
   (map (λ (x) (move-row x v left?)) lst))
 (move '((0 2 0 0) (2 4 8 16) (0 4 4 8) (2 0 0 0)) 0 #t)
